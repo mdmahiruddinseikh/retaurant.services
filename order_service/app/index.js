@@ -29,7 +29,7 @@ app.use("/orders", orderRoutes)
 
 const swaggerDocument = YAML.load('./swagger.yaml');
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs/order_service', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 app.get("/health", (req, res) => {

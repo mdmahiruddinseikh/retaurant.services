@@ -21,7 +21,7 @@ Promise.all([
         return;
     });
 
-    console.log("Working on port  ", PORT);
+    console.log("Restaurant_service Working on port  ", PORT);
 }).catch(err => {
     console.log("Failed to connect db ", err)
     process.exit(-1)

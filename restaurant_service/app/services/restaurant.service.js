@@ -1,6 +1,8 @@
 const Model = require('../models/restaurant');
 const axios = require('axios');
 
+const ORDER_SERVICE_URL = process.env.ORDER_SERVICE_URL || 'http://localhost:8082';
+
 module.exports = {
     getRestaurant: async (req) => {
         try {

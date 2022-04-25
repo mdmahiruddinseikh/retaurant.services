@@ -7,6 +7,8 @@ const bcrypt = require("bcrypt");
 
 const JwtSecretKey = "Restaurant Service Secret Key";
 
+const ORDER_SERVICE_URL = process.env.ORDER_SERVICE_URL || 'http://localhost:8082';
+
 module.exports = {
     getCustomer: async (req) => {
         try {
@@ -131,10 +133,11 @@ module.exports = {
     getCustomerOrders: async (req) => {
         try {
             // console.log(getCustomerOrders);
-            const response = await axios.get(`http://localhost:8082/orders/get_specific_customers_order/${req.params._id}`);
             
+            const response = await axios.get(`${ORDER_SERVICE_URL}/orders/get_specific_customers_order/${req.params._id}`);
+
             console.log(response);
-            
+
             if (response) {
                 return { status: 200, response: 'success', msg: 'Order list.', data: response.data.data || [] };
             }

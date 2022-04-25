@@ -24,7 +24,7 @@ model.sequelize.sync({
         return;
     });
 
-    console.log("Working on port  ", PORT);
+    console.log("Oder_service Working on port  ", PORT);
 });
 
 module.exports = server
