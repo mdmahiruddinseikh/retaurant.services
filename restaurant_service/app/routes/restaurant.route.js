@@ -2,23 +2,28 @@ const express = require("express");
 const restaurantController = require("../controllers/restaurant.controller");
 const restaurantValidator = require("../validations/restaurant.validation");
 
+const CUSTOMER_SERVICE_URL = process.env.CUSTOMER_SERVICE_URL || 'http://localhost:8081'
+
 const restaurantRoutes = express.Router();
 
+const axios = require('axios');
+
 //Middleware for validate token 
-const jwtAuthCheck = (req, res, next) => {
+const jwtAuthCheck = async (req, res, next) => {
     try {
-
-        next();
-        // const token = req.headers.token
-
-        // const decoded = jwt.verify(token, JwtSecretKey);
-
-        // if (decoded && decoded.email) {
-        //     next()
-        // }
-        // else {
-        //     res.json({ status: 400, response: 'error', msg: 'Something went wrong.' });
-        // }
+        const response = await axios({
+            method: 'post', //you can set what request you want to be
+            url: `${CUSTOMER_SERVICE_URL}/customers/verifyToken`,
+            headers: {
+                token: req.headers.token
+            }
+        });
+        if (response.data.status != 200) {
+            res.json(response.data);
+        }
+        else {
+            next();
+        }
     } catch (error) {
         console.log(error);
         res.json({ status: 400, response: 'error', msg: 'Something went wrong.', data: error });
@@ -31,6 +36,5 @@ restaurantRoutes.post("/", restaurantValidator.createCustomerSchemaValidation, r
 restaurantRoutes.put("/:_id", jwtAuthCheck, restaurantController.updateById);
 restaurantRoutes.delete("/:_id", jwtAuthCheck, restaurantController.deleteById);
 restaurantRoutes.get("/:_id/orders", jwtAuthCheck, restaurantController.getOrders);
-
 
 module.exports = restaurantRoutes;
