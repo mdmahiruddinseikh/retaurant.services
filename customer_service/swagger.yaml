@@ -1,0 +1,582 @@
+openapi: 3.0.1
+info:
+  title: Customer Service CRUD APIs
+  description: All CRUD APIs
+  version: 0.0.1
+servers:
+- url: http://localhost:8081
+paths:
+  /customers/login:
+    post:
+      summary: customer login.
+      operationId: customerLogin
+      tags:
+       - CustomerService
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/LoginReqBody"
+      responses:
+        200:
+          description: Customer data
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/SpecificCustomerDataLogin"
+        401:
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/ValidationError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/Error"
+  /customers:
+     post:
+      tags: 
+        - CustomerService
+      summary: Register new customer
+      operationId: createCustomer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/CreateCustomerCreateReqObj"
+      responses:
+        200:
+          description: Create customer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    exaple: 200
+                  response:
+                    type: String
+                    example: success
+                  msg:
+                    type: String
+                    example: New customer created.
+                  data:
+                    type: object
+        401:
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/ValidationError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/Error"
+     get:
+      summary: Get all customer list.
+      operationId: getCustomerList
+      tags:
+        - CustomerService
+      parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: skip
+          description: Skip for pagination.
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - in: query
+          name: limit
+          description: limit for pagination.
+          required: false
+          schema:
+            type: integer
+            example: 50
+      responses:
+        200:
+          description: Customer List.
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/CustomerList"
+        401:
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/ValidationError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/Error"
+  /customers/{id}:
+    get:
+      summary: get customer by id.
+      operationId: getCustomerById
+      tags:
+       - CustomerService
+      parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          description: _id of document.
+          required: true
+          schema:
+            type: string
+            example: 62663ede2e3cde361712e022
+            description: _id of the document
+      responses:
+        200:
+          description: Customer data
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/SpecificCustomerData"
+        401:
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/ValidationError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/Error"
+    put:
+      tags:
+        - CustomerService
+      summary: Update customer data.
+      operationId: updateCustomerData
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          description: _id of the document
+          required: true
+          schema:
+            type: string
+            example: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/UpdateCustomerData"
+      responses:
+        200:
+          description: Update customer status.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  response:
+                    type: string
+                    example: success
+                  msg:
+                    type: string
+                    example: Customer data updated successfully. 
+                  date:
+                    type: object
+        401:
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/ValidationError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/Error"
+    delete:
+      tags:
+       - CustomerService
+      summary: Delete customer by id.
+      operationId: deleteCustomerById
+      parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          description: customer id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          description: Delete customer.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  response:
+                    type: string
+                    example: success
+                  msg:
+                    type: string
+                    example: Customer data deleted successfully.. 
+        401:
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/ValidationError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/Error"
+  /customers/verifyToken:
+    post:
+      summary: Verify authentication token
+      operationId: verifyToken
+      tags:
+       - CustomerService
+      parameters:
+        - in: header
+          name: token
+          description: token for authentication checking.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Customer data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  response:
+                    type: string
+                    example: success
+                  msg:
+                    type: string
+                    example: Token verified successfully.
+        401:
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/ValidationError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/Error"
+  /customers/{customer_id}/orders:
+    get:
+      summary: get orders of restaurant by id.
+      operationId: getOrdersOfRestaurantById
+      tags:
+       - RestaurantService
+      parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: customer_id
+          description: customer_id.
+          required: true
+          schema:
+            type: string
+            example: 62663ede2e3cde361712e022
+            description: restaurant_id of the document
+      responses:
+        200:
+          description: Order data
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/OrderList"
+        401:
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/ValidationError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/Error"
+definitions:
+  ItemListObjArr:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        menu_id:
+          type: string
+        restaurant_id:
+          type: string
+        price:
+          type: integer
+        order_id: 
+          type: integer
+        createdAt:
+          type: date
+        updatedAt:
+          type: date
+  OrderListObjArr:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        customer_id:
+          type: string
+        amount:
+          type: integer
+        order_status:
+          type: string
+        items: 
+          $ref: "#/definitions/ItemListObjArr"
+  OrderList:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 200
+      response:
+        type: string
+        example: success
+      msg:
+        type: string
+        example: Order list.
+      data:
+        $ref: "#/definitions/OrderListObjArr"
+  UpdateCustomerData:
+    type: object
+    properties:
+      full_name:
+        type: string
+      mobile_no:
+        type: string
+      alternative_mobile_no:
+        type: string
+  CreateCustomerCreateReqObj:
+    type: object
+    properties:
+      full_name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      mobile_no:
+        type: string
+      alternative_mobile_no:
+        type: string
+      address:
+        $ref: "#/definitions/AddressArr"
+  AddressArr:
+    type: array
+    items:
+      type: object
+      properties:
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        pin:
+          type: string
+        default:
+          type: string
+  CustomerList:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 200
+      response:
+        type: string
+        example: success
+      msg:
+        type: string
+        example: Customer list.
+      data:
+        $ref: "#/definitions/CustomerListObjArr"
+  LoginReqBody:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+  SpecificCustomerData:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 200
+      response:
+        type: string
+        example: success
+      msg:
+        type: string
+        example: Customer data.
+      data:
+        $ref: "#/definitions/CustomerListObjData"
+  SpecificCustomerDataLogin:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 200
+      response:
+        type: string
+        example: success
+      msg:
+        type: string
+        example: Customer data.
+      token:
+        type: string
+      data:
+        $ref: "#/definitions/CustomerListObjData"
+  CustomerListObjData:
+    type: object
+    properties:
+      _id:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      mobile_no:
+        type: string
+      alternative_mobile_no:
+        type: string
+      address: 
+        $ref: "#/definitions/CustomerListObjArr"
+  CustomerListObjArr:
+    type: array
+    items:
+      type: object
+      properties:
+        _id:
+          type: string
+        email:
+          type: string
+        full_name:
+          type: string
+        mobile_no:
+          type: string
+        alternative_mobile_no:
+          type: string
+        createdAt:
+          type: date
+        updatedAt:
+          type: date
+  AddressListObjArr:
+    type: array
+    items:
+      type: object
+      properties:
+        _id:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        pin:
+          type: string
+        default: 
+          type: string
+        createdAt:
+          type: date
+        updatedAt:
+          type: date
+  Error:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 400
+      response:
+        type: string
+        example: error
+      msg:
+        type: string
+        example: Something went wrong.
+      error:
+        type: object
+        properties:
+          name:
+            type: string
+          errors:
+            type: array
+            items:
+              type: object
+              properties:
+                message:
+                  type: string
+  ValidationError:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 401
+      response:
+        type: string
+        example: validationerror
+      msg:
+        type: string
+        example: validation msg
