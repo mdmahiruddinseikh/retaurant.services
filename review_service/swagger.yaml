@@ -1,55 +1,32 @@
 openapi: 3.0.1
 info:
-  title: Customer Service CRUD APIs
+  title: Review Service CRUD APIs
   description: All CRUD APIs
   version: 0.0.1
 servers:
-- url: http://localhost:8081
-paths:
-  /customers/login:
-    post:
-      summary: customer login.
-      operationId: customerLogin
-      tags:
-       - CustomerService
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/definitions/LoginReqBody"
-      responses:
-        200:
-          description: Customer data
-          content:
-            application/json:
-              schema:
-                $ref: "#/definitions/SpecificCustomerDataLogin"
-        401:
-          description: validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/definitions/ValidationError"
-        400:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/definitions/Error"
-  /customers:
+- url: http://localhost:8083
+paths:  
+  /reviews:
      post:
       tags: 
-        - CustomerService
-      summary: Register new customer
-      operationId: createCustomer
+        - ReviewService
+      parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
+      summary: Add new review.
+      operationId: createReview
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/definitions/CreateCustomerCreateReqObj"
+              $ref: "#/definitions/CreateReview"
       responses:
         200:
-          description: Create customer
+          description: Create review.
           content:
             application/json:
               schema:
@@ -63,7 +40,7 @@ paths:
                     example: success
                   msg:
                     type: String
-                    example: New customer created.
+                    example: Created.
                   data:
                     type: object
         401:
@@ -79,10 +56,10 @@ paths:
               schema:
                 $ref: "#/definitions/Error"
      get:
-      summary: Get all customer list.
-      operationId: getCustomerList
+      summary: Get all review list.
+      operationId: getReviewList
       tags:
-        - CustomerService
+        - ReviewService
       parameters:
         - in: header
           name: token
@@ -106,11 +83,11 @@ paths:
             example: 50
       responses:
         200:
-          description: Customer List.
+          description: Review List.
           content:
             application/json:
               schema:
-                $ref: "#/definitions/CustomerList"
+                $ref: "#/definitions/ReviewList"
         401:
           description: validation error
           content:
@@ -123,12 +100,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/definitions/Error"
-  /customers/{id}:
+  /reviews/{id}:
     get:
-      summary: get customer by id.
-      operationId: getCustomerById
+      summary: get review by id.
+      operationId: getReviewById
       tags:
-       - CustomerService
+       - ReviewService
       parameters:
         - in: header
           name: token
@@ -146,11 +123,11 @@ paths:
             description: _id of the document
       responses:
         200:
-          description: Customer data
+          description: Review data
           content:
             application/json:
               schema:
-                $ref: "#/definitions/SpecificCustomerData"
+                $ref: "#/definitions/SpecificObjData"
         401:
           description: validation error
           content:
@@ -165,9 +142,9 @@ paths:
                 $ref: "#/definitions/Error"
     put:
       tags:
-        - CustomerService
-      summary: Update customer data.
-      operationId: updateCustomerData
+        - ReviewService
+      summary: Update review data.
+      operationId: updateData
       produces:
         - application/json
       parameters:
@@ -188,10 +165,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/definitions/UpdateCustomerData"
+              $ref: "#/definitions/CreateReview"
       responses:
         200:
-          description: Update customer status.
+          description: Update data.
           content:
             application/json:
               schema:
@@ -205,8 +182,8 @@ paths:
                     example: success
                   msg:
                     type: string
-                    example: Customer data updated successfully. 
-                  date:
+                    example: Data updated successfully. 
+                  data:
                     type: object
         401:
           description: validation error
@@ -222,9 +199,9 @@ paths:
                 $ref: "#/definitions/Error"
     delete:
       tags:
-       - CustomerService
-      summary: Delete customer by id.
-      operationId: deleteCustomerById
+       - ReviewService
+      summary: Delete by id.
+      operationId: deleteById
       parameters:
         - in: header
           name: token
@@ -234,56 +211,14 @@ paths:
             type: string
         - in: path
           name: id
-          description: customer id
-          required: true
-          schema:
-            type: integer
-            example: 1
-      responses:
-        200:
-          description: Delete customer.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  response:
-                    type: string
-                    example: success
-                  msg:
-                    type: string
-                    example: Customer data deleted successfully.. 
-        401:
-          description: validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/definitions/ValidationError"
-        400:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/definitions/Error"
-  /customers/verifyToken:
-    post:
-      summary: Verify authentication token
-      operationId: verifyToken
-      tags:
-       - CustomerService
-      parameters:
-        - in: header
-          name: token
-          description: token for authentication checking.
+          description:  _id
           required: true
           schema:
             type: string
+            example: 1
       responses:
         200:
-          description: Customer data
+          description: Delete restaurant.
           content:
             application/json:
               schema:
@@ -297,7 +232,7 @@ paths:
                     example: success
                   msg:
                     type: string
-                    example: Token verified successfully.
+                    example: Deleted successfully.. 
         401:
           description: validation error
           content:
@@ -310,12 +245,66 @@ paths:
             application/json:
               schema:
                 $ref: "#/definitions/Error"
-  /customers/{customer_id}/orders:
+  /reviews/{restaurant_id}/restaurant:
     get:
-      summary: get orders of restaurant by id.
-      operationId: getOrdersOfRestaurantById
+      summary: Get restaurant review list.
+      operationId: getRestaurantReviewList
       tags:
-       - CustomerService
+        - ReviewService
+      parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: restaurant_id
+          description: restaurant_id of retaurant.
+          required: true
+          schema:
+            type: string
+            example: 62663ede2e3cde361712e022
+            description: _id of the document
+        - in: query
+          name: skip
+          description: Skip for pagination.
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - in: query
+          name: limit
+          description: limit for pagination.
+          required: false
+          schema:
+            type: integer
+            example: 50
+      responses:
+        200:
+          description: Review List.
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/ReviewList"
+        401:
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/ValidationError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/Error"
+  /reviews/{customer_id}/customer:
+    get:
+      summary: Get customer review list.
+      operationId: getCustomerReviewList
+      tags:
+        - ReviewService
       parameters:
         - in: header
           name: token
@@ -325,19 +314,33 @@ paths:
             type: string
         - in: path
           name: customer_id
-          description: customer_id.
+          description: customer_id of customer.
           required: true
           schema:
             type: string
             example: 62663ede2e3cde361712e022
-            description: restaurant_id of the document
+            description: _id of the document
+        - in: query
+          name: skip
+          description: Skip for pagination.
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - in: query
+          name: limit
+          description: limit for pagination.
+          required: false
+          schema:
+            type: integer
+            example: 50
       responses:
         200:
-          description: Order data
+          description: Review List.
           content:
             application/json:
               schema:
-                $ref: "#/definitions/OrderList"
+                $ref: "#/definitions/ReviewList"
         401:
           description: validation error
           content:
@@ -399,7 +402,34 @@ definitions:
         example: Order list.
       data:
         $ref: "#/definitions/OrderListObjArr"
-  UpdateCustomerData:
+  OrderListObjData:
+    type: object
+    properties:
+      id:
+        type: integer
+      customer_id:
+        type: string
+      amount:
+        type: integer
+      order_status:
+        type: string
+      items: 
+        $ref: "#/definitions/ItemListObjArr"
+  SpecificOrderData:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 200
+      response:
+        type: string
+        example: success
+      msg:
+        type: string
+        example: Order data.
+      data:
+        $ref: "#/definitions/OrderListObjData"
+  UpdateData:
     type: object
     properties:
       full_name:
@@ -408,37 +438,27 @@ definitions:
         type: string
       alternative_mobile_no:
         type: string
-  CreateCustomerCreateReqObj:
+  CreateReview:
     type: object
     properties:
-      full_name:
+      restaurant_id:
         type: string
-      email:
+      customer_id:
         type: string
-      password:
+      description:
         type: string
-      mobile_no:
+      rating:
+        type: integer
+  review_ratings_obj:
+    type: object
+    properties:
+      total_rating:
         type: string
-      alternative_mobile_no:
-        type: string
-      address:
-        $ref: "#/definitions/AddressArr"
-  AddressArr:
-    type: array
-    items:
-      type: object
-      properties:
-        address:
-          type: string
-        city:
-          type: string
-        state:
-          type: string
-        pin:
-          type: string
-        default:
-          type: string
-  CustomerList:
+      avg_rating:
+        type: integer
+      total_rating_count:
+        type: integer
+  ReviewList:
     type: object
     properties:
       status:
@@ -451,7 +471,10 @@ definitions:
         type: string
         example: Customer list.
       data:
-        $ref: "#/definitions/CustomerListObjArr"
+        $ref: "#/definitions/reviewAaary"
+      review_ratings:
+        $ref: "#/definitions/review_ratings_obj"
+      
   LoginReqBody:
     type: object
     properties:
@@ -459,7 +482,7 @@ definitions:
         type: string
       password:
         type: string
-  SpecificCustomerData:
+  SpecificObjData:
     type: object
     properties:
       status:
@@ -470,9 +493,9 @@ definitions:
         example: success
       msg:
         type: string
-        example: Customer data.
+        example: Review data.
       data:
-        $ref: "#/definitions/CustomerListObjData"
+        $ref: "#/definitions/ResObjData"
   SpecificCustomerDataLogin:
     type: object
     properties:
@@ -489,61 +512,34 @@ definitions:
         type: string
       data:
         $ref: "#/definitions/CustomerListObjData"
-  CustomerListObjData:
+  ResObjData:
     type: object
     properties:
       _id:
         type: string
-      email:
+      restaurant_id:
+          type: string
+      customer_id:
         type: string
-      full_name:
+      description:
         type: string
-      mobile_no:
-        type: string
-      alternative_mobile_no:
-        type: string
-      address: 
-        $ref: "#/definitions/CustomerListObjArr"
-  CustomerListObjArr:
+      rating:
+        type: integer
+  reviewAaary:
     type: array
     items:
       type: object
       properties:
         _id:
           type: string
-        email:
+        restaurant_id:
           type: string
-        full_name:
+        customer_id:
           type: string
-        mobile_no:
+        description:
           type: string
-        alternative_mobile_no:
-          type: string
-        createdAt:
-          type: date
-        updatedAt:
-          type: date
-  AddressListObjArr:
-    type: array
-    items:
-      type: object
-      properties:
-        _id:
-          type: string
-        address:
-          type: string
-        city:
-          type: string
-        state:
-          type: string
-        pin:
-          type: string
-        default: 
-          type: string
-        createdAt:
-          type: date
-        updatedAt:
-          type: date
+        rating:
+          type: integer
   Error:
     type: object
     properties:

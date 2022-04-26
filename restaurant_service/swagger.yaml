@@ -1,14 +1,68 @@
 openapi: 3.0.1
 info:
-  title: Customer Service CRUD APIs
+  title: Restaurant Service CRUD APIs
   description: All CRUD APIs
   version: 0.0.1
 servers:
-- url: http://localhost:8081
-paths:  
+  - url: http://localhost:8080
+paths:
+  /restaurants/search/{search_string}:
+    get:
+      summary: Get all restaurant list.
+      operationId: serachRestaurant
+      tags:
+        - RestaurantService
+      parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: search_string
+          description: search key.
+          required: true
+          schema:
+            type: string
+            example: Veg
+            description: search_string
+        - in: query
+          name: skip
+          description: Skip for pagination.
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - in: query
+          name: limit
+          description: limit for pagination.
+          required: false
+          schema:
+            type: integer
+            example: 50
+      responses:
+        200:
+          description: Restaurant List.
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/RestaurantList"
+        401:
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/ValidationError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/Error"
   /restaurants:
-     post:
-      tags: 
+    post:
+      tags:
         - RestaurantService
       summary: Register new restaurant
       operationId: createrestaurant
@@ -48,7 +102,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/definitions/Error"
-     get:
+    get:
       summary: Get all restaurant list.
       operationId: getRestaurantList
       tags:
@@ -98,7 +152,7 @@ paths:
       summary: get restaurant by id.
       operationId: getRestaurantById
       tags:
-       - RestaurantService
+        - RestaurantService
       parameters:
         - in: header
           name: token
@@ -175,7 +229,7 @@ paths:
                     example: success
                   msg:
                     type: string
-                    example: Data updated successfully. 
+                    example: Data updated successfully.
                   data:
                     type: object
         401:
@@ -192,7 +246,7 @@ paths:
                 $ref: "#/definitions/Error"
     delete:
       tags:
-       - RestaurantService
+        - RestaurantService
       summary: Delete by id.
       operationId: deleteById
       parameters:
@@ -204,7 +258,7 @@ paths:
             type: string
         - in: path
           name: id
-          description:  _id
+          description: _id
           required: true
           schema:
             type: integer
@@ -225,7 +279,7 @@ paths:
                     example: success
                   msg:
                     type: string
-                    example: Deleted successfully.. 
+                    example: Deleted successfully..
         401:
           description: validation error
           content:
@@ -243,7 +297,7 @@ paths:
       summary: get orders of restaurant by id.
       operationId: getOrdersOfRestaurantById
       tags:
-       - RestaurantService
+        - RestaurantService
       parameters:
         - in: header
           name: token
@@ -292,7 +346,7 @@ definitions:
           type: string
         price:
           type: integer
-        order_id: 
+        order_id:
           type: integer
         createdAt:
           type: date
@@ -311,7 +365,7 @@ definitions:
           type: integer
         order_status:
           type: string
-        items: 
+        items:
           $ref: "#/definitions/ItemListObjArr"
   OrderList:
     type: object
@@ -338,7 +392,7 @@ definitions:
         type: integer
       order_status:
         type: string
-      items: 
+      items:
         $ref: "#/definitions/ItemListObjArr"
   SpecificOrderData:
     type: object
@@ -408,9 +462,9 @@ definitions:
         example: success
       msg:
         type: string
-        example: Customer list.
+        example: Restaurant list.
       data:
-        $ref: "#/definitions/CustomerListObjArr"
+        $ref: "#/definitions/ListObjArr"
   LoginReqBody:
     type: object
     properties:
@@ -443,7 +497,7 @@ definitions:
         example: success
       msg:
         type: string
-        example: Customer data.
+        example: Restaurant data.
       token:
         type: string
       data:
@@ -471,7 +525,7 @@ definitions:
         type: date
       updatedAt:
         type: date
-      menus: 
+      menus:
         $ref: "#/definitions/menuList"
   ListObjArr:
     type: array
@@ -498,7 +552,7 @@ definitions:
           type: date
         updatedAt:
           type: date
-        menus: 
+        menus:
           $ref: "#/definitions/menuList"
   menuList:
     type: array

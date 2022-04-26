@@ -23,8 +23,11 @@ module.exports = {
         res.json(response)
     },
     getOrders : async (req, res) => {
-        console.log('getOrders')
         const response = await restaurantService.getOrders(req)
+        res.json(response)
+    },
+    searchRestaurants : async (req, res) => {
+        const response = await restaurantService.searchRestaurants(req)
         res.json(response)
     }
 }

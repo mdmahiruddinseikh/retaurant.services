@@ -37,4 +37,8 @@ restaurantRoutes.put("/:_id", jwtAuthCheck, restaurantController.updateById);
 restaurantRoutes.delete("/:_id", jwtAuthCheck, restaurantController.deleteById);
 restaurantRoutes.get("/:_id/orders", jwtAuthCheck, restaurantController.getOrders);
 
+
+restaurantRoutes.get("/search/:search_string", restaurantController.searchRestaurants);
+
+
 module.exports = restaurantRoutes;

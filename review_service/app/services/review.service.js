@@ -1,20 +1,20 @@
-const Model = require('../models/restaurant');
+const Model = require('../models/review');
 const axios = require('axios');
 
 const ORDER_SERVICE_URL = process.env.ORDER_SERVICE_URL || 'http://localhost:8082';
 
 module.exports = {
-    getRestaurant: async (req) => {
+    getReview: async (req) => {
         try {
             const data = await Model.findAll(req);
-            return { status: 200, response: 'success', msg: 'Restaurant list.', data: data || [] };
+            return { status: 200, response: 'success', msg: 'Review list.', data: data || [] };
         } catch (error) {
             console.log(error);
             // return error;
             return { status: 400, response: 'error', msg: 'Something went wrong.', data: error };
         }
     },
-    getRestaurantById: async (req) => {
+    getReviewById: async (req) => {
         try {
             const data = await Model.findOne({ _id: req.params._id });
             return { status: 200, response: 'success', msg: 'Restaurant data.', data: data || {} };
@@ -24,26 +24,53 @@ module.exports = {
             return { status: 400, response: 'error', msg: 'Something went wrong.', data: error };
         }
     },
-    createRestaurant: async (req) => {
+    getRestaurantReview: async (req) => {
         try {
+            const data = await Model.find({ restaurant_id: req.params.restaurant_id });
 
+            //avg rating calculation and total reviews
+
+            const reviewRatings = await Model.review_ratings({ restaurant_id: req.params.restaurant_id });
+
+            console.log(reviewRatings);
+
+            return {
+                status: 200,
+                response: 'success',
+                msg: 'Restaurant reviews.',
+                data: data || {},
+                review_ratings: reviewRatings[0] || {}
+            };
+        } catch (error) {
+            console.log(error);
+            // return error;
+            return { status: 400, response: 'error', msg: 'Something went wrong.', data: error };
+        }
+    },
+    getCustomerReview: async (req) => {
+        try {
+            const data = await Model.find({ customer_id: req.params.customer_id });
+            return { status: 200, response: 'success', msg: 'Customer review.', data: data || {} };
+        } catch (error) {
+            console.log(error);
+            // return error;
+            return { status: 400, response: 'error', msg: 'Something went wrong.', data: error };
+        }
+    },
+    createReview: async (req) => {
+        try {
             var new_obj = {
-                "name": req.body.name,
-                "address": req.body.address,
-                "city": req.body.city,
-                "state": req.body.state,
-                "cusine": req.body.cusine,
-                "avg_rating": req.body.avg_rating,
-                "total_reviews": req.body.total_reviews,
-                "locations": req.body.locations,
-                "menus": req.body.menus,
+                "restaurant_id": req.body.restaurant_id,
+                "customer_id": req.body.customer_id,
+                "description": req.body.description,
+                "rating": req.body.rating
             };
 
             var m = new Model(new_obj);
 
             const save = await m.save();
 
-            if (save.name) {
+            if (save._id) {
                 return { status: 200, response: 'success', msg: 'Created.', data: save };
             }
             else {
@@ -80,41 +107,6 @@ module.exports = {
         } catch (error) {
             return { status: 400, response: 'error', msg: 'Something went wrong.', data: error };
         }
-    },
-    getOrders: async (req) => {
-        try {
-            const response = await axios.get(`${ORDER_SERVICE_URL}/orders/get_specific_customers_order/${req.params.customer_id}`);
-            if (response) {
-                return { status: 200, response: 'success', msg: 'Order list.', data: response.data.data || [] };
-            }
-            else {
-                return { status: 400, response: 'error', msg: 'Something went wrong.', data: [] };
-            }
-
-        } catch (error) {
-            console.log(error);
-            return { status: 400, response: 'error', msg: 'Something went wrong.', data: error };
-        }
-
-    },
-    searchRestaurants: async (req) => {
-        try {
-            const data = await Model.find({
-                $or: [
-                    { "name": { "$regex": req.params.search_string, "$options": "i" } },
-                    { "city": { "$regex": req.params.search_string, "$options": "i" } },
-                    { "state": { "$regex": req.params.search_string, "$options": "i" } },
-                    { menus: { $elemMatch: { name: { "$regex": req.params.search_string, "$options": "i" } } } },
-                    { menus: { $elemMatch: { category: { "$regex": req.params.search_string, "$options": "i" } } } }
-                ]
-            });
-
-            return { status: 200, response: 'success', msg: 'Restaurant list.', data: data || {} };
-        } catch (error) {
-            console.log(error);
-            // return error;
-            return { status: 400, response: 'error', msg: 'Something went wrong.', data: error };
-        }
-    },
+    }
 
 }
