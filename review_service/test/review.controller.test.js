@@ -16,40 +16,16 @@ const req_body = {
             "restaurant_id": "2",
             "menu_id": "4",
             "price": 500
-        },
-        {
-            "restaurant_id": "4",
-            "menu_id": "1",
-            "price": 500
-        },
-        {
-            "restaurant_id": "10",
-            "menu_id": "50",
-            "price": 250
         }
     ]
 };
 
-let order_id;
+let review_id;
 
-describe('Order Service', () => {
-    // it('it should GET access token for aassistant controller', (done) => {
-    //     chai.request(config.token.token_host)
-    //         .post(config.token.token_env_point)
-    //         .send(config.token.token_req_body)
-    //         .end((err, res) => {
-    //             if (err) { done(err) };
-    //             (res).should.have.status(200);
-    //             (res.body).should.be.a('object');
-    //             expect(res.body).to.have.property('access_token');
-    //             token = res.body.access_token;
-    //             done();
-    //         });
-    // });
-
-    it('it should create order', () => {
+describe('Review Service', () => {
+    it('it should create review', (done) => {
         chai.request(server)
-            .post(`/orders`)
+            .post(`/reviews`)
             .send(req_body)
             .end((err, res) => {
                 if (err) done(err);
@@ -59,30 +35,18 @@ describe('Order Service', () => {
                 expect(res.body).to.have.property('status');
                 expect(res.body).to.have.property('msg');
 
-                order_id = res.body.data.id;
-                // done();
-            });
-    });
-});
-describe('Order Service', () => {
-    it('it should GET order list', () => {
-        chai.request(server)
-            .get(`/orders`)
-            .end((err, res) => {
-                if (err) done(err);
-                (res).should.have.status(200);
-                (res.body).should.be.a('object');
-                (res.body.data).should.be.a('array');
-                expect(res.body).to.have.property('data');
-                expect(res.body).to.have.property('status');
-                expect(res.body).to.have.property('msg');
-                // done();
+                review_id = res.body.data.id;
+
+                console.log('review_id in post api : ' + review_id);
+                done();
             });
     });
 
-    it('it should GET specific order by id', () => {
+    it('it should GET specific review by id', () => {
+        console.log('review_id');
+        console.log(review_id);
         chai.request(server)
-            .get(`/orders/1`)
+            .get(`/reviews/${review_id}`)
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
@@ -91,13 +55,12 @@ describe('Order Service', () => {
                 (res.body.data).should.be.a('object');
                 expect(res.body).to.have.property('status');
                 expect(res.body).to.have.property('msg');
-                // done();
             });
     });
 
-    it('it should update order status', () => {
+    it('it should update review status', () => {
         chai.request(server)
-            .put(`/orders/1`)
+            .put(`/reviews/${review_id}`)
             .send({
                 order_status: "accted by restaurant"
             })
@@ -109,7 +72,35 @@ describe('Order Service', () => {
                 expect(res.body).to.have.property('msg');
                 // res.body.should.have.property('status').eql(200);
                 // res.body.should.have.property('msg').eql('Order data updated successfully.');
-                // done();
+            });
+    });
+
+    it('it should delete review', () => {
+        chai.request(server)
+            .delete(`/reviews/${review_id}`)
+            .end((err, res) => {
+                if (err) done(err);
+                (res).should.have.status(200);
+                (res.body).should.be.a('object');
+                expect(res.body).to.have.property('status');
+                expect(res.body).to.have.property('msg');
+                // res.body.should.have.property('status').eql(200);
+                // res.body.should.have.property('msg').eql('Order data updated successfully.');
+            });
+    });
+});
+describe('Review Service', () => {
+    it('it should GET all reviews list', () => {
+        chai.request(server)
+            .get(`/reviews`)
+            .end((err, res) => {
+                if (err) done(err);
+                (res).should.have.status(200);
+                (res.body).should.be.a('object');
+                (res.body.data).should.be.a('array');
+                expect(res.body).to.have.property('data');
+                expect(res.body).to.have.property('status');
+                expect(res.body).to.have.property('msg');
             });
     });
 });

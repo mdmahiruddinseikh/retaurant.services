@@ -3,11 +3,70 @@ const axios = require('axios');
 
 const ORDER_SERVICE_URL = process.env.ORDER_SERVICE_URL || 'http://localhost:8082';
 
+
+require("dotenv").config()
+
+const redis = require('redis');
+
+const url = `redis://${process.env.REDIS_USERNAME}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}`
+
+async function connectRedis() {
+    const client = redis.createClient({
+        url
+    });
+
+    client.on('error', (err) => console.log('Redis Client Error', err));
+
+    await client.connect();
+    return client;
+}
+
+
+async function setCache(key, data) {
+    const client = await connectRedis()
+    client.set(key, JSON.stringify(data))
+}
+
+async function getCache(key) {
+    const client = await connectRedis()
+    const resp = await client.get(key)
+    // console.log("CAche is resp", resp)
+    if (resp) {
+        return JSON.parse(resp)
+    }
+}
+
+
+
+async function delCache(key) {
+    const client = await connectRedis()
+    const resp = await client.del(key)
+
+}
+
+
 module.exports = {
     getRestaurant: async (req) => {
         try {
-            const data = await Model.findAll(req);
-            return { status: 200, response: 'success', msg: 'Restaurant list.', data: data || [] };
+
+            const ListFromCache = await getCache('RestaurantList');
+
+            if (ListFromCache && ListFromCache.length > 0) {
+
+                console.log('Fetching from cache - redis')
+
+                return { status: 200, response: 'success', msg: 'Restaurant list.', data: ListFromCache || [] };
+
+            } else {
+
+                console.log('Fetching from - collection DB')
+
+                const data = await Model.findAll(req);
+
+                await setCache('RestaurantList', data);
+
+                return { status: 200, response: 'success', msg: 'Restaurant list.', data: data || [] };
+            }
         } catch (error) {
             console.log(error);
             // return error;
@@ -44,6 +103,7 @@ module.exports = {
             const save = await m.save();
 
             if (save.name) {
+                await delCache('RestaurantList');
                 return { status: 200, response: 'success', msg: 'Created.', data: save };
             }
             else {
@@ -58,6 +118,7 @@ module.exports = {
             const update = await Model.update({ _id: req.params._id }, req.body);
 
             if (update.modifiedCount > 0) {
+                await delCache('RestaurantList');
                 return { status: 200, response: 'success', msg: 'Updated successfully.', data: update };
             }
             else {
@@ -72,6 +133,7 @@ module.exports = {
             const deleted = await Model.delete({ _id: req.params._id });
 
             if (deleted.deletedCount > 0) {
+                await delCache('RestaurantList');
                 return { status: 200, response: 'success', msg: 'Deleted successfully.', data: deleted };
             }
             else {

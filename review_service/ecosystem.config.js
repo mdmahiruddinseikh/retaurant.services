@@ -1,6 +1,6 @@
 module.exports = {
     apps : [{
-      name   : "order-service",
+      name   : "review-service",
       script : "./server.js",
       instances : "max",
       exec_mode : "cluster",

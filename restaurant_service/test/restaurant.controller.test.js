@@ -9,28 +9,29 @@ chai.use(chaiHttp);
 const env = process.env.ENV || 'development';
 
 const req_body = {
-    "full_name": "Mahiruddin sk",
-    "email": "mahiruddinsk@gmail.com",
-    "password": "123456",
-    "mobile_no": "9749197240",
-    "alternative_mobile_no": "7872188556",
-    "address": [
+    "name": "string",
+    "address": "string",
+    "city": "string",
+    "state": "string",
+    "cusine": "string",
+    "avg_rating": 0,
+    "total_reviews": 0,
+    "contact_no": "string",
+    "menus": [
       {
-        "address": "deara",
-        "city": "kolkata",
-        "state": "W.B",
-        "pin": "713409",
-        "default": ""
+        "name": "string",
+        "category": "string",
+        "price": 0
       }
     ]
   };
 
-let customer_id;
+let restaurant_id;
 
-describe('Customer Service', () => {
-    it('it should create customer', (done) => {
+describe('Restaurant Service', () => {
+    it('it should create restaurant', (done) => {
         chai.request(server)
-            .post(`/customers`)
+            .post(`/restaurants`)
             .send(req_body)
             .end((err, res) => {
                 if (err) done(err);
@@ -40,47 +41,18 @@ describe('Customer Service', () => {
                 expect(res.body).to.have.property('status');
                 expect(res.body).to.have.property('msg');
 
-                customer_id = res.body.data.id;
+                restaurant_id = res.body.data.id;
 
-                console.log('customer_id in post api : ' + customer_id);
+                console.log('restaurant_id in post api : ' + restaurant_id);
                 done();
             });
     });
-    it('it should customer login', () => {
-        chai.request(server)
-            .post(`/customers/login`)
-            .send({
-                "email": "mahiruddinsk@gmail.com",
-                "password": "123456"
-              })
-            .end((err, res) => {
-                if (err) done(err);
-                (res).should.have.status(200);
-                (res.body).should.be.a('object');
-                expect(res.body).to.have.property('data');
-                expect(res.body).to.have.property('status');
-                expect(res.body).to.have.property('msg');
-            });
-    });
-    it('it should customer login', () => {
-        chai.request(server)
-            .post(`/customers/login`)
-            .send(token)
-            .end((err, res) => {
-                if (err) done(err);
-                (res).should.have.status(200);
-                (res.body).should.be.a('object');
-                expect(res.body).to.have.property('data');
-                expect(res.body).to.have.property('status');
-                expect(res.body).to.have.property('msg');
-            });
-    });
 
-    it('it should GET specific customer by id', () => {
-        console.log('customer_id');
-        console.log(customer_id);
+    it('it should GET specific restaurant by id', () => {
+        console.log('restaurant_id');
+        console.log(restaurant_id);
         chai.request(server)
-            .get(`/customers/${customer_id}`)
+            .get(`/restaurants/search/{search_string}`)
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
@@ -92,11 +64,11 @@ describe('Customer Service', () => {
             });
     });
 
-    it('it should GET specific customer by id', () => {
-        console.log('customer_id');
-        console.log(customer_id);
+    it('it should GET specific restaurant by id', () => {
+        console.log('restaurant_id');
+        console.log(restaurant_id);
         chai.request(server)
-            .get(`/customers/${customer_id}/orders`)
+            .get(`/restaurants/${restaurant_id}`)
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
@@ -108,13 +80,25 @@ describe('Customer Service', () => {
             });
     });
 
-    it('it should update customers data', () => {
+    it('it should update restaurant status', () => {
         chai.request(server)
-            .put(`/customers/${customer_id}`)
+            .put(`/restaurants/${restaurant_id}`)
             .send({
-                "full_name": "mahiruddin sk",
-                "mobile_no": "9749136691",
-                "alternative_mobile_no": "9749197240"
+                "name": "string",
+                "address": "string",
+                "city": "string",
+                "state": "string",
+                "cusine": "string",
+                "avg_rating": 0,
+                "total_reviews": 0,
+                "contact_no": "string",
+                "menus": [
+                  {
+                    "name": "string",
+                    "category": "string",
+                    "price": 0
+                  }
+                ]
               })
             .end((err, res) => {
                 if (err) done(err);
@@ -127,9 +111,9 @@ describe('Customer Service', () => {
             });
     });
 
-    it('it should delete customers', () => {
+    it('it should delete restaurant', () => {
         chai.request(server)
-            .delete(`/customers/${customer_id}`)
+            .delete(`/restaurants/${restaurant_id}`)
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
@@ -138,13 +122,29 @@ describe('Customer Service', () => {
                 expect(res.body).to.have.property('msg');
                 // res.body.should.have.property('status').eql(200);
                 // res.body.should.have.property('msg').eql('Order data updated successfully.');
+            });
+    });
+
+    it('it should GET specific restaurant by id', () => {
+        console.log('restaurant_id');
+        console.log(restaurant_id);
+        chai.request(server)
+            .get(`/restaurants/${restaurant_id}/orders`)
+            .end((err, res) => {
+                if (err) done(err);
+                (res).should.have.status(200);
+                (res.body).should.be.a('object');
+                expect(res.body).to.have.property('data');
+                (res.body.data).should.be.a('object');
+                expect(res.body).to.have.property('status');
+                expect(res.body).to.have.property('msg');
             });
     });
 });
-describe('Customer Service', () => {
-    it('it should GET all customers list', () => {
+describe('Restaurant Service', () => {
+    it('it should GET all restaurants list', () => {
         chai.request(server)
-            .get(`/customers`)
+            .get(`/restaurants`)
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
