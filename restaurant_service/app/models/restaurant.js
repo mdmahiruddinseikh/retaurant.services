@@ -39,4 +39,4 @@ RestaurantSchema.statics.delete = function (query) {
         .exec();// Should return a Promise
 }
 
-module.exports = mongoose.model('customers', RestaurantSchema);
+module.exports = mongoose.model('restaurants', RestaurantSchema);

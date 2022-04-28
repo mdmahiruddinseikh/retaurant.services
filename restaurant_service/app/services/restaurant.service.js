@@ -74,13 +74,34 @@ module.exports = {
         }
     },
     getRestaurantById: async (req) => {
-        try {
+        // try {
+        //     const data = await Model.findOne({ _id: req.params._id });
+        //     return { status: 200, response: 'success', msg: 'Restaurant data.', data: data || {} };
+        // } catch (error) {
+        //     console.log(error);
+        //     // return error;
+        //     return { status: 400, response: 'error', msg: 'Something went wrong.', data: error };
+        // }
+
+        const ListFromCache = await getCache('RestaurantList');
+
+        if (ListFromCache && ListFromCache.filter(resturant => resturant._id === req.params._id).length > 0) {
+
+            console.log('Fetching from cache - redis');
+
+            const data = ListFromCache.filter(resturant => resturant._id === req.params._id);
+
+            if (data) {
+                return { status: 200, response: 'success', msg: 'Restaurant data.', data: data[0] || {} };
+            }
+
+        } else {
+
+            console.log('Fetching from - collection DB')
+
             const data = await Model.findOne({ _id: req.params._id });
+
             return { status: 200, response: 'success', msg: 'Restaurant data.', data: data || {} };
-        } catch (error) {
-            console.log(error);
-            // return error;
-            return { status: 400, response: 'error', msg: 'Something went wrong.', data: error };
         }
     },
     createRestaurant: async (req) => {
@@ -161,22 +182,66 @@ module.exports = {
     },
     searchRestaurants: async (req) => {
         try {
-            const data = await Model.find({
-                $or: [
-                    { "name": { "$regex": req.params.search_string, "$options": "i" } },
-                    { "city": { "$regex": req.params.search_string, "$options": "i" } },
-                    { "state": { "$regex": req.params.search_string, "$options": "i" } },
-                    { menus: { $elemMatch: { name: { "$regex": req.params.search_string, "$options": "i" } } } },
-                    { menus: { $elemMatch: { category: { "$regex": req.params.search_string, "$options": "i" } } } }
-                ]
-            });
+            const search = req.params.search_string;
 
-            return { status: 200, response: 'success', msg: 'Restaurant list.', data: data || {} };
+            const ListFromCache = await getCache('RestaurantList');
+
+            if (ListFromCache && ListFromCache.length > 0) {
+
+                const filteredData = ListFromCache.filter(item => {
+                    let found = false;
+                    Object.keys(item).forEach(key => {
+                        if (item[key] && item[key].indexOf && item[key].indexOf(search) > -1) {
+                            found = true;
+                        }
+                    });
+                    return found;
+                });
+
+                if (filteredData.length > 0) {
+
+                    console.log('Fetching from cache - redis');
+
+                    return { status: 200, response: 'success', msg: 'Restaurant list.', data: filteredData || [] };
+
+                }
+                else {
+                    console.log('Fetching from - collection DB')
+
+                    const data = await Model.find({
+                        $or: [
+                            { "name": { "$regex": req.params.search_string, "$options": "i" } },
+                            { "city": { "$regex": req.params.search_string, "$options": "i" } },
+                            { "state": { "$regex": req.params.search_string, "$options": "i" } },
+                            { menus: { $elemMatch: { name: { "$regex": req.params.search_string, "$options": "i" } } } },
+                            { menus: { $elemMatch: { category: { "$regex": req.params.search_string, "$options": "i" } } } }
+                        ]
+                    });
+
+                    return { status: 200, response: 'success', msg: 'Restaurant list.', data: data || [] };
+                }
+
+            }
+            else {
+                console.log('Fetching from - collection DB')
+
+                const data = await Model.find({
+                    $or: [
+                        { "name": { "$regex": req.params.search_string, "$options": "i" } },
+                        { "city": { "$regex": req.params.search_string, "$options": "i" } },
+                        { "state": { "$regex": req.params.search_string, "$options": "i" } },
+                        { menus: { $elemMatch: { name: { "$regex": req.params.search_string, "$options": "i" } } } },
+                        { menus: { $elemMatch: { category: { "$regex": req.params.search_string, "$options": "i" } } } }
+                    ]
+                });
+
+                return { status: 200, response: 'success', msg: 'Restaurant list.', data: data || [] };
+            }
         } catch (error) {
             console.log(error);
             // return error;
             return { status: 400, response: 'error', msg: 'Something went wrong.', data: error };
         }
-    },
+    }
 
 }

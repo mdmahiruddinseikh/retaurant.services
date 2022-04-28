@@ -11,18 +11,23 @@ const axios = require('axios');
 //Middleware for validate token 
 const jwtAuthCheck = async (req, res, next) => {
     try {
-        const response = await axios({
-            method: 'post', //you can set what request you want to be
-            url: `${CUSTOMER_SERVICE_URL}/customers/verifyToken`,
-            headers: {
-                token: req.headers.token
-            }
-        });
-        if (response.data.status != 200) {
-            res.json(response.data);
+        if (process.env.AUTH_VALIDATION === 'false') {
+            next();
         }
         else {
-            next();
+            const response = await axios({
+                method: 'post', //you can set what request you want to be
+                url: `${CUSTOMER_SERVICE_URL}/customers/verifyToken`,
+                headers: {
+                    token: req.headers.token
+                }
+            });
+            if (response.data.status != 200) {
+                res.json(response.data);
+            }
+            else {
+                next();
+            }
         }
     } catch (error) {
         console.log(error);
