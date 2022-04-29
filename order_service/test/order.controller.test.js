@@ -6,7 +6,7 @@ const expect = chai.expect;
 chai.use(require("chai-sorted"));
 chai.use(chaiHttp);
 let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1haGlydWRkaW5zZWlraEBnbWFpbC5jb20iLCJpYXQiOjE2NTEyMDE1MDcsImV4cCI6MTY1MTIwNTEwN30.9OZM0WOSgObeWy4dTJhqx-KNqexg0Zp0J7H9SRCmdIs"
-;
+    ;
 const env = process.env.ENV || 'development';
 
 const req_body = {
@@ -36,17 +36,17 @@ describe('Order Service', () => {
                 expect(res.body).to.have.property('status');
                 expect(res.body).to.have.property('msg');
 
-                console.log('res.body')
-                console.log(res.body)
+                expect(res.body.data).to.have.property('id');
 
                 order_id = res.body.data.id;
 
-                console.log('order_id in post api : ' + order_id);
+                console.log('New order_id return after post is : ' + order_id);
                 done();
             });
     });
 
     it('it should GET specific order by id', () => {
+        console.log('order_id used to get order info is : ' + order_id);
         chai.request(server)
             .get(`/orders/${order_id}`)
             .end((err, res) => {
@@ -61,6 +61,7 @@ describe('Order Service', () => {
     });
 
     it('it should update order status', () => {
+        console.log('order_id used to update order info is : ' + order_id);
         chai.request(server)
             .put(`/orders/${order_id}`)
             .send({
@@ -78,6 +79,7 @@ describe('Order Service', () => {
     });
 
     it('it should delete order', () => {
+        console.log('order_id used to delete order is : ' + order_id);
         chai.request(server)
             .delete(`/orders/${order_id}`)
             .end((err, res) => {

@@ -17,6 +17,8 @@ const jwtAuthCheck = async (req, res, next) => {
             next();
         }
         else {
+            // console.log('req.headers.token');
+            // console.log(req.headers.token);
             const response = await axios({
                 method: 'post', //you can set what request you want to be
                 url: `${CUSTOMER_SERVICE_URL}/customers/verifyToken`,

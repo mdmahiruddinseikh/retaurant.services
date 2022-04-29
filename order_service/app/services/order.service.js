@@ -3,9 +3,6 @@
 
 const Order = require("../models/order");
 const model = require('../models')
-
-
-
 require("dotenv").config()
 const client = require('amqplib/callback_api')
 
@@ -19,10 +16,8 @@ function bail(err) {
     process.exit(1);
 }
 
-
 // Publisher
 function publish_review(data) {
-
     client
         .connect(url, function (err, conn) {
             if (err != null) bail(err);
@@ -33,13 +28,7 @@ function publish_review(data) {
                 ch.assertQueue(q);
                 ch.sendToQueue(q, Buffer.from(JSON.stringify(data)));
             }
-            //TODO on review service
-            // total reviews and avg rating should be computed
-            // on every put, post, delete method calls
-
         });
-
-
 }
 
 module.exports = {
