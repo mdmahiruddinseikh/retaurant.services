@@ -9,19 +9,19 @@ chai.use(chaiHttp);
 const env = process.env.ENV || 'development';
 
 const req_body = {
-    "name": "string",
-    "address": "string",
-    "city": "string",
-    "state": "string",
-    "cusine": "string",
-    "avg_rating": 0,
-    "total_reviews": 0,
-    "contact_no": "string",
+    "name": "Test Restaurant",
+    "address": "Test Address",
+    "city": "Kolkata",
+    "state": "WB",
+    "cusine": "test",
+    "avg_rating": 4,
+    "total_reviews": 10,
+    "contact_no": "9832910997",
     "menus": [
       {
-        "name": "string",
-        "category": "string",
-        "price": 0
+        "name": "Dal-Vat",
+        "category": "Veg",
+        "price": 50
       }
     ]
   };
@@ -29,7 +29,7 @@ const req_body = {
 let restaurant_id;
 
 describe('Restaurant Service', () => {
-    it('it should create restaurant', (done) => {
+    it('it should create restaurant', () => {
         chai.request(server)
             .post(`/restaurants`)
             .send(req_body)
@@ -44,21 +44,20 @@ describe('Restaurant Service', () => {
                 restaurant_id = res.body.data.id;
 
                 console.log('restaurant_id in post api : ' + restaurant_id);
-                done();
+                // done();
             });
     });
 
-    it('it should GET specific restaurant by id', () => {
+    it('it should search restaurant with search string', () => {
         console.log('restaurant_id');
         console.log(restaurant_id);
         chai.request(server)
             .get(`/restaurants/search/{search_string}`)
-            .end((err, res) => {
+            .end((err, res) => {  
                 if (err) done(err);
                 (res).should.have.status(200);
                 (res.body).should.be.a('object');
                 expect(res.body).to.have.property('data');
-                (res.body.data).should.be.a('object');
                 expect(res.body).to.have.property('status');
                 expect(res.body).to.have.property('msg');
             });
@@ -84,21 +83,7 @@ describe('Restaurant Service', () => {
         chai.request(server)
             .put(`/restaurants/${restaurant_id}`)
             .send({
-                "name": "string",
-                "address": "string",
-                "city": "string",
-                "state": "string",
-                "cusine": "string",
-                "avg_rating": 0,
-                "total_reviews": 0,
-                "contact_no": "string",
-                "menus": [
-                  {
-                    "name": "string",
-                    "category": "string",
-                    "price": 0
-                  }
-                ]
+                "name": "Test Restaurant 2",
               })
             .end((err, res) => {
                 if (err) done(err);
@@ -125,7 +110,7 @@ describe('Restaurant Service', () => {
             });
     });
 
-    it('it should GET specific restaurant by id', () => {
+    it('it should GET orders of specific restaurant by id', () => {
         console.log('restaurant_id');
         console.log(restaurant_id);
         chai.request(server)
@@ -135,7 +120,6 @@ describe('Restaurant Service', () => {
                 (res).should.have.status(200);
                 (res.body).should.be.a('object');
                 expect(res.body).to.have.property('data');
-                (res.body.data).should.be.a('object');
                 expect(res.body).to.have.property('status');
                 expect(res.body).to.have.property('msg');
             });

@@ -1,4 +1,6 @@
+
 const server = require('../server');
+
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const should = chai.should();
@@ -15,20 +17,21 @@ const req_body = {
     "mobile_no": "9749197240",
     "alternative_mobile_no": "7872188556",
     "address": [
-      {
-        "address": "deara",
-        "city": "kolkata",
-        "state": "W.B",
-        "pin": "713409",
-        "default": ""
-      }
+        {
+            "address": "deara",
+            "city": "kolkata",
+            "state": "W.B",
+            "pin": "713409",
+            "default": ""
+        }
     ]
-  };
+};
 
 let customer_id;
+let token;
 
-describe('Customer Service', () => {
-    it('it should create customer', (done) => {
+describe('Customer Service Test Case', () => {
+    it('it should create customer', () => {
         chai.request(server)
             .post(`/customers`)
             .send(req_body)
@@ -40,19 +43,18 @@ describe('Customer Service', () => {
                 expect(res.body).to.have.property('status');
                 expect(res.body).to.have.property('msg');
 
-                customer_id = res.body.data.id;
+                // customer_id = res.body.data.id;
 
-                console.log('customer_id in post api : ' + customer_id);
-                done();
+                // done();
             });
     });
-    it('it should customer login', () => {
+    it('it should check customer login', () => {
         chai.request(server)
             .post(`/customers/login`)
             .send({
                 "email": "mahiruddinsk@gmail.com",
                 "password": "123456"
-              })
+            })
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
@@ -60,12 +62,17 @@ describe('Customer Service', () => {
                 expect(res.body).to.have.property('data');
                 expect(res.body).to.have.property('status');
                 expect(res.body).to.have.property('msg');
+
+                token = res.body.token;
             });
     });
-    it('it should customer login', () => {
+    it('it should get error while login with wrong credentials', () => {
         chai.request(server)
             .post(`/customers/login`)
-            .send(token)
+            .send({
+                "email": "mahiruddinsk@gmail.com",
+                "password": "12345"
+            })
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
@@ -77,26 +84,9 @@ describe('Customer Service', () => {
     });
 
     it('it should GET specific customer by id', () => {
-        console.log('customer_id');
-        console.log(customer_id);
         chai.request(server)
             .get(`/customers/${customer_id}`)
-            .end((err, res) => {
-                if (err) done(err);
-                (res).should.have.status(200);
-                (res.body).should.be.a('object');
-                expect(res.body).to.have.property('data');
-                (res.body.data).should.be.a('object');
-                expect(res.body).to.have.property('status');
-                expect(res.body).to.have.property('msg');
-            });
-    });
-
-    it('it should GET specific customer by id', () => {
-        console.log('customer_id');
-        console.log(customer_id);
-        chai.request(server)
-            .get(`/customers/${customer_id}/orders`)
+            .set("token", token)
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
@@ -111,11 +101,12 @@ describe('Customer Service', () => {
     it('it should update customers data', () => {
         chai.request(server)
             .put(`/customers/${customer_id}`)
+            .set("token", token)
             .send({
                 "full_name": "mahiruddin sk",
                 "mobile_no": "9749136691",
                 "alternative_mobile_no": "9749197240"
-              })
+            })
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
@@ -130,6 +121,7 @@ describe('Customer Service', () => {
     it('it should delete customers', () => {
         chai.request(server)
             .delete(`/customers/${customer_id}`)
+            .set("token", token)
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
@@ -140,8 +132,7 @@ describe('Customer Service', () => {
                 // res.body.should.have.property('msg').eql('Order data updated successfully.');
             });
     });
-});
-describe('Customer Service', () => {
+
     it('it should GET all customers list', () => {
         chai.request(server)
             .get(`/customers`)

@@ -132,11 +132,7 @@ module.exports = {
     },
     getCustomerOrders: async (req) => {
         try {
-            // console.log(getCustomerOrders);
-            
             const response = await axios.get(`${ORDER_SERVICE_URL}/orders/get_specific_customers_order/${req.params._id}`);
-
-            console.log(response);
 
             if (response) {
                 return { status: 200, response: 'success', msg: 'Order list.', data: response.data.data || [] };

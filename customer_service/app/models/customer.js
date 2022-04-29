@@ -40,7 +40,6 @@ CustomerSchema.statics.findAll = function (req) {
     return this.find().skip(req.query.skip || 0).limit(req.query.limit || 25).exec();// Should return a Promise
 }
 CustomerSchema.statics.login = function (req) {
-    console.log('CustomerSchema.statics.login');
     return this.findOne({ email: req.body.email }).exec();// Should return a Promise
 }
 
