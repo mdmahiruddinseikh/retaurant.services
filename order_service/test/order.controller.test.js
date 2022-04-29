@@ -5,7 +5,8 @@ const should = chai.should();
 const expect = chai.expect;
 chai.use(require("chai-sorted"));
 chai.use(chaiHttp);
-// let token;
+let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1haGlydWRkaW5zZWlraEBnbWFpbC5jb20iLCJpYXQiOjE2NTEyMDE1MDcsImV4cCI6MTY1MTIwNTEwN30.9OZM0WOSgObeWy4dTJhqx-KNqexg0Zp0J7H9SRCmdIs"
+;
 const env = process.env.ENV || 'development';
 
 const req_body = {
@@ -27,6 +28,7 @@ describe('Order Service', () => {
         chai.request(server)
             .post(`/orders`)
             .send(req_body)
+            .set("token", + token)
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
@@ -34,6 +36,9 @@ describe('Order Service', () => {
                 expect(res.body).to.have.property('data');
                 expect(res.body).to.have.property('status');
                 expect(res.body).to.have.property('msg');
+
+                console.log('res.body')
+                console.log(res.body)
 
                 order_id = res.body.data.id;
 
@@ -43,10 +48,9 @@ describe('Order Service', () => {
     });
 
     it('it should GET specific order by id', () => {
-        console.log('order_id');
-        console.log(order_id);
         chai.request(server)
             .get(`/orders/${order_id}`)
+            .set("token", + token)
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
@@ -61,6 +65,7 @@ describe('Order Service', () => {
     it('it should update order status', () => {
         chai.request(server)
             .put(`/orders/${order_id}`)
+            .set("token", + token)
             .send({
                 order_status: "accted by restaurant"
             })
@@ -70,14 +75,15 @@ describe('Order Service', () => {
                 (res.body).should.be.a('object');
                 expect(res.body).to.have.property('status');
                 expect(res.body).to.have.property('msg');
-                // res.body.should.have.property('status').eql(200);
-                // res.body.should.have.property('msg').eql('Order data updated successfully.');
+                res.body.should.have.property('status').eql(200);
+                res.body.should.have.property('msg').eql('Order data updated successfully.');
             });
     });
 
     it('it should delete order', () => {
         chai.request(server)
             .delete(`/orders/${order_id}`)
+            .set("token", + token)
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
@@ -93,11 +99,12 @@ describe('Order Service', () => {
     it('it should GET all order list', () => {
         chai.request(server)
             .get(`/orders`)
+            .set("token", + token)
             .end((err, res) => {
                 if (err) done(err);
                 (res).should.have.status(200);
                 (res.body).should.be.a('object');
-                (res.body.data).should.be.a('array');
+                // (res.body.data).should.be.a('array');
                 expect(res.body).to.have.property('data');
                 expect(res.body).to.have.property('status');
                 expect(res.body).to.have.property('msg');

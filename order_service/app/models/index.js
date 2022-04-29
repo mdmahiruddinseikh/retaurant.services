@@ -8,7 +8,6 @@ const fs = require("fs"); //fs module import
 
 const path = require("path"); //path module import
 
-console.log("SQL connection string : " + pg_con_string);
 const sequelize = new Sequelize(pg_con_string);
 let db = {};
 

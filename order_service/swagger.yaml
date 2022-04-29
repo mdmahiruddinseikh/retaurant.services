@@ -12,6 +12,13 @@ paths:
         - bearerAuth: []
       tags: 
         - OrderService
+      parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
       summary: Create new order
       operationId: createOrder
       requestBody:
@@ -58,6 +65,12 @@ paths:
       tags:
         - OrderService
       parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
         - in: query
           name: include
           description: To fetch the associations.
@@ -107,6 +120,12 @@ paths:
       tags:
        - OrderService
       parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
         - in: path
           name: id
           description: order id.
@@ -150,6 +169,12 @@ paths:
       produces:
         - application/json
       parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
         - in: path
           name: id
           description: order id
@@ -199,6 +224,12 @@ paths:
       summary: Delete order by id.
       operationId: deleteOrderById
       parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
         - in: path
           name: id
           description: order id

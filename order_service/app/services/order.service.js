@@ -126,8 +126,6 @@ module.exports = {
     },
     get_specific_customer_order: async (req) => {
         try {
-            console.log('customer_id')
-            console.log(req.params.customer_id)
             const order = await model.orders.findAll({
                 where: {
                     customer_id: req.params.customer_id

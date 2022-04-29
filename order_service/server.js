@@ -9,8 +9,8 @@ const server = http.createServer(app)
 
 console.log("Syncing database...");
 model.sequelize.sync({
-    // logging: console.log,
-    logging: false,
+    logging: console.log,
+    // logging: false,
     alter: true,
 }).then(function () {
     const IP_ADDRESS = process.env.IP_ADDRESS || "0.0.0.0";
