@@ -28,12 +28,12 @@ module.exports = {
                         .required()
                 })
         });
-        validateRequest(req, next, schema);
+        validateRequest(req, next, schema, res);
     }
 }
 
 // helper functions
-function validateRequest(req, next, schema) {
+function validateRequest(req, next, schema, res) {
     const options = {
         abortEarly: false, // include all errors
         allowUnknown: true, // ignore unknown props
@@ -41,7 +41,8 @@ function validateRequest(req, next, schema) {
     };
     const { error, value } = schema.validate(req.body, options);
     if (error) {
-        next(`Validation error: ${error.details.map(x => x.message).join(', ')}`);
+        res.json({ status: 400, response: 'error', msg: 'Something went wrong.', data: `Validation error: ${error.details.map(x => x.message).join(', ')}` });
+        // next(`Validation error: ${error.details.map(x => x.message).join(', ')}`);
         // next({ status: 401, response: 'validationerror', msg: error.details, data: error });
     } else {
         req.body = value;

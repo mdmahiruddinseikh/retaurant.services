@@ -4,6 +4,44 @@
 const Order = require("../models/order");
 const model = require('../models')
 
+
+
+require("dotenv").config()
+const client = require('amqplib/callback_api')
+
+var q = 'order';
+
+const url = process.env.RABBIT_MQ_URL
+
+//callback in case of error
+function bail(err) {
+    console.error(err);
+    process.exit(1);
+}
+
+
+// Publisher
+function publish_review(data) {
+
+    client
+        .connect(url, function (err, conn) {
+            if (err != null) bail(err);
+            console.log("connected , publishing review")
+            conn.createChannel(on_open);
+            function on_open(err, ch) {
+                if (err != null) bail(err);
+                ch.assertQueue(q);
+                ch.sendToQueue(q, Buffer.from(JSON.stringify(data)));
+            }
+            //TODO on review service
+            // total reviews and avg rating should be computed
+            // on every put, post, delete method calls
+
+        });
+
+
+}
+
 module.exports = {
     // params is object, for parameters from controllers
     getOrders: async (req) => {
@@ -58,6 +96,13 @@ module.exports = {
             });
 
             model.items.bulkCreate(req.body.items, { timestamps: false, });
+
+            // const data = {
+            //     restaurant_id: '11111111111111',
+            //     total_reviews: 100,
+            //     avg_rating: 4.3
+            // }
+            publish_review(orderIn);
 
             return { status: 200, response: 'success', msg: 'New order created.', data: orderIn };
 
@@ -134,7 +179,7 @@ module.exports = {
                     {
                         model: model.items,
                         as: 'items',
-                        
+
                     }
                 ]
             });

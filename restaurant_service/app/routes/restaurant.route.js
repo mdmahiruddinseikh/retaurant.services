@@ -37,7 +37,7 @@ const jwtAuthCheck = async (req, res, next) => {
 
 restaurantRoutes.get("/", jwtAuthCheck, restaurantController.getRestaurant);
 restaurantRoutes.get("/:_id", jwtAuthCheck, restaurantController.getRestaurantById);
-restaurantRoutes.post("/", restaurantValidator.createCustomerSchemaValidation, restaurantController.createRestaurant);
+restaurantRoutes.post("/", jwtAuthCheck, restaurantValidator.createCustomerSchemaValidation, restaurantController.createRestaurant);
 restaurantRoutes.put("/:_id", jwtAuthCheck, restaurantController.updateById);
 restaurantRoutes.delete("/:_id", jwtAuthCheck, restaurantController.deleteById);
 restaurantRoutes.get("/:_id/orders", jwtAuthCheck, restaurantController.getOrders);

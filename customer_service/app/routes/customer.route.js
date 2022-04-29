@@ -25,12 +25,12 @@ const jwtAuthCheck = (req, res, next) => {
     }
 }
 
-customerRoutes.get("/", customerController.getCustomer);
-customerRoutes.get("/:_id", customerController.getCustomerById);
+customerRoutes.get("/",jwtAuthCheck, customerController.getCustomer);
+customerRoutes.get("/:_id",jwtAuthCheck, customerController.getCustomerById);
 customerRoutes.post("/", customerValidator.createCustomerSchemaValidation, customerController.createCustomer);
 customerRoutes.put("/:_id", customerValidator.updateCustomerSchemaValidation, customerController.updateCustomerById);
-customerRoutes.delete("/:_id", customerController.deleteCustomerById);
-customerRoutes.get("/:_id/orders", customerController.getCustomerOrders);
+customerRoutes.delete("/:_id",jwtAuthCheck, customerController.deleteCustomerById);
+customerRoutes.get("/:_id/orders",jwtAuthCheck, customerController.getCustomerOrders);
 customerRoutes.post("/login", customerValidator.customerLoginReqObjValidation, customerController.customerLogin);
 
 customerRoutes.post("/verifyToken", customerController.verifyToken)

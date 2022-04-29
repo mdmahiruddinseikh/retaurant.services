@@ -1,7 +1,7 @@
 require("dotenv").config()
 const client =   require('amqplib/callback_api')
 
-var q = 'reviews';
+var q = 'order';
 
 const url = process.env.RABBIT_MQ_URL
 

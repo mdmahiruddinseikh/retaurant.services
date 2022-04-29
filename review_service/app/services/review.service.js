@@ -32,7 +32,7 @@ module.exports = {
 
             const reviewRatings = await Model.review_ratings({ restaurant_id: req.params.restaurant_id });
 
-            console.log(reviewRatings);
+            //console.log(reviewRatings);
 
             return {
                 status: 200,

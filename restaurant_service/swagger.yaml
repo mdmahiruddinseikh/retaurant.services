@@ -66,6 +66,13 @@ paths:
         - RestaurantService
       summary: Register new restaurant
       operationId: createrestaurant
+      parameters:
+        - in: header
+          name: token
+          description: token for authentication.
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
